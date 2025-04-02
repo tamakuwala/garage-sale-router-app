@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="design.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/tonystar/bootstrap-float-label/v4.0.2/bootstrap-float-label.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+</head>
+<body>
+  <script type = "text/javascript">
+    
+    //This functions helps in navigating to the location once the uses is authenticated.
+    function locationLogin(){
+            var http = new XMLHttpRequest();
+              var url = '/signin'; 
+              var params = 'username=' + document.getElementById("username").value 
+              +'&password=' + document.getElementById("password").value;
+                 
+              http.open('POST', url, true);
+          
+              http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            
+              http.onreadystatechange = function() 
+              { 
+                  if(http.readyState == 4 && http.status == 200) 
+                  {
+                    var response = JSON.parse(http.responseText);
+                    
+                    if(response.answer == "Login successful") {
+                        alert(response.answer);
+                        window.location.href = "location.html";
+                    }
+                    else {
+                         alert(response.answer);
+                    } 
+                  }
+              };
+              http.send(params);
+    };
+  
+  //Uses a session storage for dark mode
+  document.body.style.backgroundColor = sessionStorage.getItem('bg');
+  document.body.style.color = sessionStorage.getItem('cc');
+  function darker() {
+      if ( sessionStorage.getItem('bg') === 'rgb(255, 255, 255)') {
+
+              sessionStorage.setItem('bg', 'rgb(6, 23, 37)');
+              sessionStorage.setItem('cc', '#777');
+
+
+      }
+      else if (sessionStorage.getItem('bg') == null || undefined) {
+          sessionStorage.setItem('bg', 'rgb(6, 23, 37)');
+          sessionStorage.setItem('cc', '#777');
+
+      }
+      else if( sessionStorage.getItem('bg') === 'rgb(6, 23, 37)') {
+
+          sessionStorage.setItem('bg', 'rgb(255, 255, 255)');
+          sessionStorage.setItem('cc', '#333');
+
+
+      }
+
+  document.body.style.backgroundColor = sessionStorage.getItem('bg');
+  document.body.style.color = sessionStorage.getItem('cc');
+
+  }
+
+  </script>
+<!-- Home Page -->
+<section class="vh-100">
+  <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary"></div><br>
+    <div class="container-fluid h-custom">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-md-9 col-lg-6 col-xl-5">
+          <img src="logo.png" class="img-fluid"
+            alt="Sample image">
+        </div>
+        <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+          <form>
+            <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+              <p class="lead fw-normal mb-0 me-3">
+                <div id="line">
+                    Sign in
+                </div>
+              </p> 
+            </div>
+            <div class="divider d-flex align-items-center my-4"></div>
+  
+            <!-- Email input -->
+            <div class="container-fluid h-custom">
+              <div class="form-outline mb-4">
+                  <label class="form-label" for="username">Username</label>
+                  <input class="form-control form-control-lg" id="username" placeholder="Enter username"></input> 
+              </div>  
+            </div>
+  
+            <!-- Password input -->
+            <div class="container-fluid h-custom">
+              <div class="form-outline mb-4">
+                  <label class="form-label" for="password">Password</label>
+                  <input type="password" class="form-control form-control-lg" id="password" placeholder="Enter password"></input>
+              </div>    
+            </div>
+  
+            <div class="d-flex justify-content-between align-items-center">
+            <!-- Checkbox -->
+            <div class="form-check mb-0">
+              <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
+              <label class="form-check-label" for="form2Example3">
+                Remember me
+              </label>
+            </div>
+            </div>
+            <!-- Calls the login the function -->
+            <div class="text-center text-lg-start mt-4 pt-2">
+              <button onclick="locationLogin()" type="button" class="btn btn-primary btn-lg"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
+              <!-- Navigates to the register.html for registering a new user. -->
+              <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="register.html"
+                  class="link-danger">Register</a></p>
+            </div>
+  
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Adding a blue bar in the end of the page -->
+    <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary"></div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,21 @@
+version: '3'
+services:
+
+  server:
+    build: ./server
+    depends_on:
+      - mongodb
+    container_name: node370
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./server:/app/src"
+    command: "npx nodemon src/server.js"
+
+  mongodb:
+    image: mongo:latest
+    container_name: mdbnullpointer
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./server:/data/db

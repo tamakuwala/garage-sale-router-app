@@ -1,0 +1,91 @@
+.divider:after,
+.divider:before {
+  content: "";
+  flex: 2;
+  height: 1px;
+  background: rgb(15, 86, 218);
+}
+.h-custom {
+  height: calc(100% - 73px);
+}
+@media (max-width: 450px) {
+  .h-custom {
+    height: 100%;
+  }
+}
+
+#line {
+  font-size: 24px;
+}
+/* List to display garage sales */
+dl {
+  border: 2px solid #0074d9 !important;
+  font-size: large;
+  width: 200%;
+}
+dt,
+dd {
+  color: #0074d9;
+}
+
+#spacer {
+  padding-top: 30px;
+}
+
+/* styling navlist */
+#navlist {
+  background-color: #0074d9;
+  position: absolute;
+  width: 100%;
+}
+
+/* styling navlist anchor element */
+#navlist a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.navlist-right {
+  float: right;
+}
+
+/* hover effect of navlist anchor element */
+#navlist a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* styling search bar */
+.search input[type="text"] {
+  width: 450px;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+}
+
+.search {
+  float: right;
+  margin: 7px;
+}
+
+/* Adding search icon */
+.search button[type="button"] {
+  background-color: #0074d9;
+  color: #f2f2f2;
+  float: right;
+  padding: 5px 10px;
+  margin-right: 16px;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.spacing {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}

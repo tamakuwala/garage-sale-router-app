@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location</title>
+    <!-- Adding Sources -->
+    <link rel="stylesheet" href="design.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/tonystar/bootstrap-float-label/v4.0.2/bootstrap-float-label.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+</head>
+<body>
+ 
+  <!-- Navbar items -->
+  <div id="navlist">
+      <a href="postnewsale.html">Post</a>
+      <a type="button" onclick="viewdata()">View All Sales</a>
+      <a type="button" onclick="darker()">Dark Mode</a>
+      <a type="button" onclick="logout()">Log out</a>
+      <a type="button" onclick="rewards()">Know your Rewards</a>
+      
+<!-- search bar right align -->
+      <div class="search">
+          <form action="#">
+              <input id="filter" type="text" placeholder=" Search..." name="search">
+              <button type="button" onclick="viewsales()"> <i class="fa fa-search" style="font-size: 18px;"></i></button>
+          </form>
+      </div>
+  </div>
+  
+<section class="vh-100">
+ <div class="container-fluid h-custom">
+ 
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          
+          <!-- Adding a Scroller for radius options -->
+            <div class="col-md-9 col-lg-6 col-xl-5">
+                    <br></br> 
+                    <label for="radius" style="color: #0074d9;">Choose a radius:</label>
+                      <select id="radius">
+                        <option value= 2 >2 km</option>
+                        <option value= 5 >5 km</option>
+                        <option value= 10 >10 km</option>
+                        <option value= 15 >15 km</option>
+                        <option value= 20 >20 km</option>
+                        <option value= 25 >25 km</option>
+                        <option value= 50 selected>50 km</option>
+                      </select>
+                      <input type="submit" class="btn btn-primary btn-lg" hidden
+                    style="font-size: 15px;padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.05rem; width: 0.7in; height: 0.3in;"></input><br><br>
+
+                  <!-- Google map container -->
+                  <div id="err"></div>
+                    <div id="googleMap" style="width:200%;height:400px;"></div>
+                    
+                  
+                  <table class="table" id="tableResults"><br></br></table>
+
+                   <!-- address entry box form --> 
+                    <div id="addressEntry">
+                      <form>
+                        <!-- Input for address -->
+                              <div class="form-outline mb-4">
+                                <span class="has-float-label">
+                                <label class="form-label" for="streetAddress">Street address</label>
+                                <input type="text" id="location" class="form-control form-control-lg"/>
+                                </span>     
+                              </div>
+                        
+                            <div class="input-group">
+                                  <div class="input-group">
+                                    <div class="row spacing">
+                                      <!-- Input for city -->
+                                      <div class="col">
+                                      <span class="has-float-label">
+                                          <label for="city">City</label>
+                                          <input class="form-control" id="city" type="text" required/>
+                                      </span>
+                                      </div>
+                                      <!-- Input for province -->
+                                      <div class="col">
+                                      <span class="has-float-label">
+                                          <label for="province">Province</label>
+                                          <input class="form-control" id="province" type="text" maxlength="2" required />
+                                      </span>
+                                      </div>
+                                      <!-- Input for postal code -->
+                                      <div class="col">
+                                      <span class="has-float-label">
+                                          <label for="postalcode">Postal code</label>
+                                          <input class="form-control" id="postalcode" type="text" maxlength="7" required/>
+                                      </span>
+                                      </div>
+                                      </div>                      
+                                </div>
+                            </div>
+                          <!-- Input for country -->
+                            <div class="form-outline mb-4">
+                              <span class="has-float-label">
+                              <label class="form-label" for="country">Country</label>
+                              <input type="text" id="country" class="form-control form-control-lg"/>
+                              </span>     
+                            </div>
+                            <!-- Maps the location to the map -->
+                            <button type="button" class="btn btn-primary btn-lg" id="mapButton"
+                            style="padding-left: 2.5rem; padding-right: 2.5rem; width: 6.5in;">Map</button><br><br>
+                      </form>
+                </div>
+            </div> <!-- end address entry -->
+            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1"></div>
+        </div>
+    </div>
+  </section>
+</body>
+</html>
+
+<script> 
+ 
+//  Defining variables.
+  var latitude;
+  var longitude;
+  var map;
+  var mapProp;
+
+  //Run this function when document first loads
+  $(document).ready(function()
+  {
+      navigator.geolocation.getCurrentPosition(success, error);   
+
+    
+    $("#mapButton").on('click', locateAddress ); 
+          
+        
+
+      //Builds a string from the input boxes and locates the address using geolocate from Google map
+      function locateAddress()
+      {
+        var streetAddress = $("#location").val();
+        var city          = $("#city").val(); 
+        var province      = $("#province").val(); 
+        var country       = $("#country").val(); 
+        
+        var request = streetAddress + "," + city + "," + province + "," + country;
+        
+        // Getting the key and the location API.
+        key = "AIzaSyDdBaRpUlokhS3vwzHFI-oBDlav08khVf0"
+        locationAPI = "https://maps.googleapis.com/maps/api/geocode/json?address=" + request + "&key=" + key;
+
+
+        $.getJSON( locationAPI, function(data)
+        {
+
+            // Getting Latitude and Longitude.
+            latitude = data.results[0].geometry.location.lat;
+            longitude = data.results[0].geometry.location.lng;
+
+            $("#addressEntry").hide();
+            $( "#googleMap" ).show();
+            $( "#err").hide(); 
+            
+            myMapWithMarker( 15 ); //Calling function to point a marker on the map.
+        });
+      }
+  });
+
+  //Google map JS object
+    function myMap( zoomLevel ) 
+    {
+      mapProp = 
+        {
+          center:new google.maps.LatLng( latitude, longitude ),
+          zoom:zoomLevel, 
+        };
+
+        map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+    }
+
+
+    // Function to add a marker on the map.
+    function myMapWithMarker( zoomLevel ) 
+    {
+      mapProp = 
+        {
+          center:new google.maps.LatLng( latitude, longitude ),
+          zoom:zoomLevel, 
+        };
+
+        google.maps.locateAddress
+
+        map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+
+        const myLatLng = { lat: latitude, lng: longitude }; //Getting Latitude and Longitude.
+
+        new google.maps.Marker({ //Adding Location to add marker.
+          position: myLatLng,
+          map,
+        });
+    }
+
+
+    function success(position) 
+    {
+      latitude  = position.coords.latitude;
+      longitude = position.coords.longitude;
+      $("#addressEntry").hide();
+      myMap( 12 );
+    }
+
+    // Function to detect the Error.
+    function error() 
+    {
+      var errMsg = "<H2>Cannot get your location.</H2>" +
+                    "<p>Please enter it manually.</p>";
+      $( "#err" ).append( errMsg );
+      $( "#googleMap" ).hide();
+      $("#addressEntry").show();
+    }
+    //This function is to view all the sales.
+    function viewdata()
+      {
+        var http = new XMLHttpRequest();
+        var url = '/viewdata';
+              
+        http.open('GET', url, true);
+      
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        http.onreadystatechange = function() 
+        { 
+            if(http.readyState == 4 && http.status == 200) 
+            {
+
+                var table = "";     
+                var response = JSON.parse(http.response);
+
+                var locationCoords = []; // Making a list.
+
+                // Getting Latitude and Longitude.
+                for (var i = 0; i < response.length ; i++)
+                  {
+                    locationCoords.push( { "lat": parseFloat(response[i][9]), 
+                                           "lng": parseFloat(response[i][10]) }); 
+                  }
+                  
+                  pinGarageSaleOnMap( locationCoords ); // Calling function to add pin on the map.
+
+                for (var i=0; i < response.length; i++) 
+                { 
+                  // Creating Table.
+                    table += "<dl>"+
+                                "<dt>Title: " + response[i][0] + "</dt>" +
+                                "<dd> - Location: " + response[i][3] + " </dd>" +
+                                "<dd> - Start Time: " + response[i][1] +  "</dd>" +
+                                "<dd> - End time: " + response[i][2] + "</dd>" +
+                                "<dd> - Description: " + response[i][7] + "</dd>" +
+                                "<dd> - Items available: " + response[i][8] + "</dd>" +
+                              "</dl>";
+                                      
+                              
+                                       
+                }
+                document.getElementById("tableResults").innerHTML = table;
+            }
+        };
+        http.send();
+      };      
+
+      //This function is to view the sales by the filters.
+      function viewsales()
+      {
+        var http = new XMLHttpRequest();
+        var url = '/viewsalesradius';
+        var params = 'filter=' + document.getElementById("filter").value + '&radius=' + document.getElementById("radius").value;
+              
+        http.open('POST', url, true);
+      
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        http.onreadystatechange = function() 
+        { 
+            if(http.readyState == 4 && http.status == 200) 
+            {
+
+                var table = "";      
+                var response = JSON.parse(http.response);
+                
+                var locationCoords = []; // Making a list.
+                  
+                // Getting Latitude and Longitude.
+                for (var i = 0; i < response.length ; i++)
+                {
+                  locationCoords.push( { "lat": parseFloat(response[i][9]), 
+                                           "lng": parseFloat(response[i][10]) }); 
+                }
+
+                pinGarageSaleOnMap( locationCoords ); // Calling function to add pin on the map.
+                var c;
+                for (var i=0; i < response.length; i++) 
+                {
+                    c = response[i][11];
+                    // Creating Table.
+                    table += "<dl>"+
+                                "<dt>Title: " + response[i][0] + "</dt>" +
+                                "<dd> - Location: " + response[i][3] + " </dd>" +
+                                "<dd> - Start Time: " + response[i][1] +  "</dd>" +
+                                "<dd> - End time: " + response[i][2] + "</dd>" +
+                                "<dd> - Description: " + response[i][7] + "</dd>" +
+                                "<dd> - Items available: " + response[i][8] + "</dd>" +
+                              "</dl>";
+                }
+
+                document.getElementById("tableResults").innerHTML = table;
+                doRouting(c, response );
+            }
+        };
+        http.send(params);
+      };  
+
+      /**
+      * Takes a pair of latitude and longitude formatted as JSON and places it on the map.
+      * 
+      */
+      function pinGarageSaleOnMap( coordsPair )
+      {
+        for( i=0; i < coordsPair.length; i++ )
+        {
+          new google.maps.Marker( { position: coordsPair[i], map } );
+        }
+      }
+
+      //This function is used to log out the current user.
+      function logout(){
+        var http = new XMLHttpRequest();
+          var url = '/logout'; 
+            
+          http.open('GET', url, true);
+      
+          http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        
+          http.onreadystatechange = function() 
+          { 
+              if(http.readyState == 4 && http.status == 200) 
+              {
+                var response = JSON.parse(http.responseText);
+                alert(response.answer);
+                window.location.href= "index.html";
+              }
+          };
+          http.send();
+      };
+
+      //This function is used to display the rewards of the current user.
+      function rewards(){
+        var http = new XMLHttpRequest();
+          var url = '/rewards'; 
+            
+          http.open('GET', url, true);
+      
+          http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        
+          http.onreadystatechange = function() 
+          { 
+              if(http.readyState == 4 && http.status == 200) 
+              {
+                var response = JSON.parse(http.responseText);
+                alert("You have "+ response.answer + " reward points.");
+              }
+          };
+          http.send();
+      };
+  
+          // This function will take a starting location and crate a route to all the garage sales
+          function doRouting( startAddress, allAddresses )
+          { 
+             var key            = "AIzaSyDdBaRpUlokhS3vwzHFI-oBDlav08khVf0";
+             var url            = "https://maps.googleapis.com/maps/api/geocode/json?address="+ startAddress+ "&key=" + key;
+             var locations = new Array();
+             
+             locations.push( startAddress );
+             
+             for( var i = 0; i < allAddresses.length; i++ )
+             {
+               dest =  allAddresses[i][3] + ", " + allAddresses[i][4] + ", " + allAddresses[i][5] + ", " + allAddresses[i][6];
+               locations.push( dest );
+             }
+             console.log( locations );
+
+             const directionsService = new google.maps.DirectionsService(); // Getting the service for direction.
+             const directionsRenderer = new google.maps.DirectionsRenderer();
+
+             directionsRenderer.setMap( map );
+
+             calculateAndDisplayRoute(directionsService, directionsRenderer, locations); // Calculating the results and display the final route.
+
+        }
+
+        /**
+         * This is used for Google maps routing, it takes a list of locations.
+         */
+        function calculateAndDisplayRoute(directionsService, directionsRenderer, locations) 
+        {
+              const waypts = [];
+              // Pushing the data in the list.
+              for (let i = 0; i < locations.length; i++) {
+                waypts.push({
+                    location: locations[i],
+                    stopover: true,
+                  });
+                
+              }
+              
+              // Getting the services.
+              directionsService 
+                .route({
+                  origin: locations[0],
+                  destination: locations[ locations.length -1],
+                  waypoints: waypts,
+                  optimizeWaypoints: true,
+                  travelMode: google.maps.TravelMode.DRIVING,
+                })
+                .then((response) => {
+                  directionsRenderer.setDirections(response);
+
+                  const route = response.routes[0];
+                })
+                .catch((e) => window.alert("No Garage sales found for that item " + status));
+        }
+
+
+  //Uses a session storage for dark mode
+  document.body.style.backgroundColor = sessionStorage.getItem('bg');
+  document.body.style.color = sessionStorage.getItem('cc');
+  function darker() {
+      if ( sessionStorage.getItem('bg') === 'rgb(255, 255, 255)') {
+
+              sessionStorage.setItem('bg', 'rgb(6, 23, 37)');
+              sessionStorage.setItem('cc', '#777');
+
+
+      }
+      else if (sessionStorage.getItem('bg') == null || undefined) {
+          sessionStorage.setItem('bg', 'rgb(6, 23, 37)');
+          sessionStorage.setItem('cc', '#777');
+
+      }
+      else if( sessionStorage.getItem('bg') === 'rgb(6, 23, 37)') {
+
+          sessionStorage.setItem('bg', 'rgb(255, 255, 255)');
+          sessionStorage.setItem('cc', '#333');
+
+
+      }
+
+  document.body.style.backgroundColor = sessionStorage.getItem('bg');
+  document.body.style.color = sessionStorage.getItem('cc');
+
+}
+
+</script>
+
+<!-- Adding a Bar -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdBaRpUlokhS3vwzHFI-oBDlav08khVf0&callback="></script>
