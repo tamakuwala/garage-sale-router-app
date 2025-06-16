@@ -46,14 +46,14 @@ Open in Visual Studio Code
 
 Access the Application
 
-- http://localhost:3000
+- http://localhost:8000
 
 ## 👥 Team & Collaboration
 This project was developed collaboratively by a team using Agile methodology. Regular sprints and iterative feedback helped improve delivery speed and code quality by over 20%.
 
 - Abhi Tamakuwala
 - Parthvi Solanki
-- Dorian
+- Dorian Moore
 - Micheal Judge
 
 ## 🙌 Acknowledgments
